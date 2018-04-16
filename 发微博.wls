@@ -1,6 +1,7 @@
 #!/usr/bin/env wolframscript
 
 Get["access_token.mx"];
+appURL = " http://example.com";
 
 URLExecute[
   HTTPRequest[
@@ -8,4 +9,4 @@ URLExecute[
     "Body" -> {"access_token" -> accessToken, 
       "status" -> 
        FromCharacterCode[ToCharacterCode@$ScriptCommandLine[[2]], 
-         "UTF8"] <> " http://example.com/"}|>]] // Print
+         "UTF8"] <> appURL}|>]] // Print

@@ -1,19 +1,23 @@
 #!/usr/bin/env wolframscript
-(* 请设成脚本所在的目录 *)
-SetDirectory[
-  FromCharacterCode[
-   ToCharacterCode@"/home/alephalpha/文档/马甲与小号/WebComics/", "UTF8"]];
 
 appURL = " http://example.com";
 weiboAPI = "https://api.weibo.com/2/statuses/share.json";
 
+(* 请设成脚本所在的目录 *)
+(* 目录名有中文时必须先转 UTF8 *)
+SetDirectory[
+  FromCharacterCode[
+   ToCharacterCode@"/home/alephalpha/文档/马甲与小号/WebComics/", "UTF8"]];
+
 (* 把下载到的图片放在一个临时文件夹 *)
 tmpDir = CreateDirectory[];
 
-(* 从另一个文件中读取 access_token *)
+(* 从另一个文件中读取 accessToken *)
+(* 第一次使用前请用 DumpSave 函数把 accessToken 保存到这个文件 *)
 Get["access_token.mx"];
 
 (* 请根据所使用的翻墙软件修改此处的参数 *)
+(* 只在读取 RSS 时会用到，下载图片时不用翻墙 *)
 SetInternetProxy["HTTP", {"127.0.0.1", 8087}];
 ProxyImport[url_, options___] := Module[{data},
    UseInternetProxy[True];
@@ -24,11 +28,11 @@ ProxyImport[url_, options___] := Module[{data},
 (* 上传图片，发布微博，并记录原漫画的发布时间 *)
 (* 不知为何 Mathematica 自带的关于网络的函数全部用不了，只能调用 curl *)
 Post[name_][pubDate_, title_, link_, image_String] := 
-  Run["curl -s -F 'access_token=" <> accessToken <> "' -F 'status=" <> 
-    URLEncode["[" <> name <> "]" <> link <> " " <> title <> appURL] <>
+  Import["!curl -F 'access_token=" <> accessToken <> "' -F 'status=" <>
+     URLEncode["[" <> name <> "]" <> link <> " " <> title <> appURL] <>
      "' -F 'pic=@" <> 
-    Export[FileNameJoin[{tmpDir, FileNameTake[image]}], 
-     Import[image, "Binary"], "Binary"] <> "' " <> weiboAPI];
+    Export[FileNameJoin[{tmpDir, FileNameTake@image}], 
+     Import[image, "Binary"], "Binary"] <> "' " <> weiboAPI, "JSON"];
 
 Post[name_][pubDate_, title_, link_, image_Integer: 1] :=
   Post[name][pubDate, title, link, 
@@ -43,9 +47,8 @@ ShareWebComics[name_, rss_, pattern_] :=
    Post[name] @@@ data;
    pubDates[name] = Max[Lookup[pubDates, name, 0], First /@ data];];
 
-
-
 (* 从另一个文件中读取已转发的漫画的发布时间 *)
+(* 第一次使用前请用 DumpSave 函数把 pubDates 保存到这个文件 *)
 Get["webcomics.mx"];
 
 (* 用 ShareWebComics 函数转发各网漫 *)
@@ -117,13 +120,6 @@ ShareWebComics["SpikedMath", "http://feeds.feedburner.com/SpikedMath?format=xml"
    {AbsoluteTime@pubDate, title, link,
     First@StringCases[description,
       "<img src=\"" ~~ Shortest[src__] ~~ "\"" ~~ ___ :> src]}];
-
-ShareWebComics["don't shoot the pianist", "http://euge.ca/feed/",
-  XMLElement["item", {},
-    {XMLElement["title", {}, {title_}],
-     XMLElement["link", {}, {link_}], ___,
-     XMLElement["pubDate", {}, {pubDate_}], ___}] :>
-   {AbsoluteTime@StringDrop[pubDate, -5], title, link}];
 
 ShareWebComics["ExtraOrdinary", "http://www.exocomics.com/feed",
   XMLElement["item", {},
