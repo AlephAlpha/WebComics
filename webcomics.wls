@@ -133,15 +133,12 @@ ShareWebComics["ExtraOrdinary", "http://www.exocomics.com/feed",
         "\"" ~~ ___ :>
        src1 <> "/comics" <> src2]}];
 
-ShareWebComics["pbfcomics", "http://www.pbfcomics.com/feed/feed.xml",
-  XMLElement["entry", {},
-    {XMLElement["id", {}, {link_}],
-     XMLElement["title", {_}, {title_}],
-     XMLElement["updated", {}, {updated_}], ___,
-     XMLElement["summary", {_}, {description_}], ___}] :>
-   {AbsoluteTime@updated, title, link,
-    First@StringCases[description,
-      " src=\"" ~~ Shortest[src__] ~~ "\"" ~~ ___ :> src]}];
+ShareWebComics["pbfcomics", "http://pbfcomics.com/feed/",
+  XMLElement["item", {},
+    {XMLElement["title", {}, {title_}], ___,
+     XMLElement["link", {}, {link_}], ___,
+     XMLElement["pubDate", {}, {pubDate_}], ___}] :>
+   {AbsoluteTime@StringDrop[pubDate, -5], title, link, 11}];
 
 ShareWebComics["Geek&Poke", "http://feeds.feedburner.com/GeekAndPoke",
   XMLElement["item", {},
@@ -152,6 +149,17 @@ ShareWebComics["Geek&Poke", "http://feeds.feedburner.com/GeekAndPoke",
    {AbsoluteTime@StringDrop[pubDate, -5], title, link,
     First@StringCases[description,
       " data-image=\"" ~~ Shortest[src__] ~~ "\"" ~~ ___ :> src]}];
+
+ShareWebComics["AbstruseGoose", "http://abstrusegoose.com/feed.xml", 
+  XMLElement["item", {},
+    {XMLElement["title", {}, {title_}],
+     XMLElement["link", {}, {link_}], ___,
+     XMLElement["pubDate", {}, {pubDate_}],
+     XMLElement["description", {}, {description_}], ___}] :>
+   {AbsoluteTime@pubDate, title, link,
+    First@
+     StringCases[description, 
+      "<img src=\"" ~~ Shortest[src__] ~~ "\"" ~~ ___ :> src]}];
 
 (* 保存漫画的发布时间 *)
 DumpSave["webcomics.mx", pubDates];

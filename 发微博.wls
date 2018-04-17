@@ -1,6 +1,11 @@
 #!/usr/bin/env wolframscript
 
+SetDirectory[
+  FromCharacterCode[
+   ToCharacterCode@"/home/alephalpha/文档/马甲与小号/WebComics/", "UTF8"]];
+
 Get["access_token.mx"];
+
 appURL = " http://example.com";
 
 URLExecute[
