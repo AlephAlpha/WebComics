@@ -1,6 +1,6 @@
 #!/usr/bin/env wolframscript
 
-appURL = " http://example.com";
+appURL = " https://github.com/AlephAlpha/WebComics";
 weiboAPI = "https://api.weibo.com/2/statuses/share.json";
 
 (* 请设成脚本所在的目录 *)
@@ -31,8 +31,7 @@ Post[name_][pubDate_, title_, link_, image_String] :=
   Import["!curl -F 'access_token=" <> accessToken <> "' -F 'status=" <>
      URLEncode["[" <> name <> "]" <> link <> " " <> title <> appURL] <>
      "' -F 'pic=@" <> 
-    Export[FileNameJoin[{tmpDir, FileNameTake@image}], 
-     Import[image, "Binary"], "Binary"] <> "' " <> weiboAPI, "JSON"];
+    ExpandFileName[URLDownload[image, tmpDir]] <> "' " <> weiboAPI, "JSON"];
 
 Post[name_][pubDate_, title_, link_, image_Integer: 1] :=
   Post[name][pubDate, title, link, 

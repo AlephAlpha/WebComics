@@ -6,7 +6,7 @@ SetDirectory[
 
 Get["access_token.mx"];
 
-appURL = " http://example.com";
+appURL = " https://github.com/AlephAlpha/WebComics";
 
 URLExecute[
   HTTPRequest[
