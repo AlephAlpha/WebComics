@@ -160,5 +160,17 @@ ShareWebComics["AbstruseGoose", "http://abstrusegoose.com/feed.xml",
      StringCases[description, 
       "<img src=\"" ~~ Shortest[src__] ~~ "\"" ~~ ___ :> src]}];
 
+ShareWebComics["FalseKnees", 
+  "http://www.webtoons.com/en/challenge/false-knees/rss?title_no=79544",
+  XMLElement["item", {},
+    {XMLElement["title", {}, {title_}],
+     XMLElement["link", {}, {link_}],
+     XMLElement["description", {}, {description_}],
+     XMLElement["pubDate", {}, {pubDate_}], ___}] :>
+   {AbsoluteTime@pubDate, title, link,
+    First@
+     StringCases[description, 
+      "<img src=\"" ~~ Shortest[src__] ~~ "\"" ~~ ___ :> src]}];
+
 (* 保存漫画的发布时间 *)
 DumpSave["webcomics.mx", pubDates];
