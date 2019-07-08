@@ -7,7 +7,7 @@ weiboAPI = "https://api.weibo.com/2/statuses/share.json";
 (* 目录名有中文时必须先转 UTF8 *)
 SetDirectory[
   FromCharacterCode[
-   ToCharacterCode@"/home/alephalpha/文档/马甲与小号/WebComics/", "UTF8"]];
+   ToCharacterCode@"~/文档/Wolfram Mathematica/WebComics/", "UTF8"]];
 
 (* 把下载到的图片放在一个临时文件夹 *)
 tmpDir = CreateDirectory[];
@@ -18,7 +18,7 @@ Get["access_token.mx"];
 
 (* 请根据所使用的翻墙软件修改此处的参数 *)
 (* 只在读取 RSS 时会用到，下载图片时不用翻墙 *)
-SetInternetProxy["HTTP", {"127.0.0.1", 8087}];
+SetInternetProxy["HTTP", {"127.0.0.1", 1080}];
 ProxyImport[url_, options___] := Module[{data},
    UseInternetProxy[True];
    data = Import[url, options];
